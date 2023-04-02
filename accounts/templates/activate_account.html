@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+Hi {{ user.first_name }} {{ user.last_name }}, Welcome to Emart.
+
+Please verify your email {{ user.email }} by clicking the below link.
+
+http://{{ domain }}{% url 'activate_user' pk=user.id otp=user.otp %}
+
+{% endautoescape %}
