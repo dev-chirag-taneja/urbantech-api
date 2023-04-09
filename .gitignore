@@ -174,10 +174,5 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/django
 
 # Custom
-prod_settings.py
-README.md
-cart
 order
 media
-
-requirements.txt
