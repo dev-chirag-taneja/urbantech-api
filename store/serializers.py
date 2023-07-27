@@ -55,7 +55,7 @@ class ProductColorVariantSerializer(serializers.ModelSerializer):
 class ProductGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductGallery
-        fields = ["id", "image"]    
+        fields = ["image"]    
         
     def create(self, validated_data):
         slug = self.context['slug']

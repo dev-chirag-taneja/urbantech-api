@@ -1,6 +1,10 @@
 from rest_framework.response import Response
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
@@ -196,3 +200,15 @@ class OrderList(generics.ListAPIView):
         return Order.objects.filter(user=self.request.user).prefetch_related(
             "items__product"
         )
+
+
+# Order Api (for admin)
+class OrderDetail(generics.DestroyAPIView):
+    permission_classes = [IsAdminUser | IsAuthenticatedOrReadOnly]
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
