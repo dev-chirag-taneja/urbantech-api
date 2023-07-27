@@ -17,7 +17,7 @@ urlpatterns = [
     path('activate-user/<str:pk>/<str:otp>/', ActivateUserView.as_view(), name='activate_user'),
 
     # Profile
-    path('profile/', ProfileDetailView.as_view()),
     path('profiles/', ListUserView.as_view()), 
+    path('profile/', ProfileDetailView.as_view()),
     path('profiles/<str:pk>/', DeleteUserView.as_view()),
 ]

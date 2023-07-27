@@ -63,6 +63,13 @@ class ActivateUserView(generics.UpdateAPIView):
         return {'pk' : self.kwargs['pk'], 'otp': self.kwargs['otp']}
 
 
+# List Profile Api
+class ListUserView(generics.ListAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileListSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    
 # Profile Api
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
@@ -82,15 +89,8 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     #     serializer.is_valid(raise_exception=True)
     #     serializer.save()
     #     return Response(serializer.data, status=status.HTTP_201_CREATED) 
-        
-
-# List Profile Api
-class ListUserView(generics.ListAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileListSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
-
-
+    
+    
 # Delete Profile Api
 class DeleteUserView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]

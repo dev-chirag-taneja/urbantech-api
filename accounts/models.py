@@ -57,7 +57,6 @@ class EmailThread(threading.Thread):
 
 
 def send_email(user):
-    print(1)
     current_site = "127.0.0.1:8000"
     email_subject = 'Activate your account!'
     email_body = render_to_string('activate_account.html',{

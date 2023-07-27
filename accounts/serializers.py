@@ -133,6 +133,13 @@ class ActivateUserSerializer(serializers.ModelSerializer):
         return instance
 
         
+# Profile List Serializer
+class ProfileListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["id", "name", "email", "location"]   
+     
+     
 # Profile Serializer
 class ProfileSerializer(serializers.ModelSerializer):
     # user = serializers.StringRelatedField(read_only=True)
@@ -143,10 +150,3 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["name", "email", "avatar", "location"]
-        
-        
-# Profile List Serializer
-class ProfileListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ["id", "name", "email", "location"]
