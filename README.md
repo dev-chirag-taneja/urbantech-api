@@ -76,6 +76,7 @@ EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
 
 # Make migrations
+- python manage.py makemigrations
 - python manage.py migrate
 
 # Create superuser
