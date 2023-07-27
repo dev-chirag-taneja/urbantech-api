@@ -1,20 +1,26 @@
-<h1>Emart API</h1>
+<h1>UrbanTech API</h1>
 
 [![Python Version](https://img.shields.io/badge/python-3.10-blue.svg)](https://python.org)
 [![Django Version](https://img.shields.io/badge/django-4.1.7-darkgreen.svg)](https://djangoproject.com)
 
 <p>
-Emart is an ecommerce application built on Django Framework and has all the required features that an ecommerce type application need.
+UrbanTech is an ecommerce application built on Django Framework and has all the required features that an ecommerce type application need.
 Some of the projects features are mentioned below.
 </p>
 
 ## Features
 ```
-- Account/Auth API
-- Store API
-- Cart API
-- Order API
-- Payment API
+- Auth API :
+Login, Register, Activate User, Password Change, User Profile
+
+- Store API :
+Categories, Products, Images, Reviews
+
+- Cart API :
+Cart, Add to Cart, Delete and Remove from Cart
+
+- Order API : 
+Checkout, Payment, Orders
 ``` 
 
 ## Tech Stack
@@ -29,13 +35,24 @@ Some of the projects features are mentioned below.
 - Django Rest Framework
 ```
 
+## Technical Information
+```
+Some Django and Rest Framework Features Used In Project : 
+
+- Django Signals
+- Django Email
+- Product OrderingFilter, SearchFilter
+- File Size Validation
+- Custom Pagination and Permissions
+```
+
 ## Installation
 ```
 # Clone the Repo
-- git clone https://github.com/dev-chirag-taneja/django-emart-api.git
+- git clone https://github.com/dev-chirag-taneja/urbantech-api.git
 
 # Go to directory
-- cd django-emart-api
+- cd urbantech-api
 
 # Create a virtual environment
 - python -m virtualenv env
