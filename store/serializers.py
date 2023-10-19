@@ -20,7 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         try:
-            return Category.objects.get(name = validated_data['name'])
+            return Category.objects.get(name__iexact = validated_data['name'])
         except ObjectDoesNotExist: 
             return super(CategorySerializer, self).create(validated_data)
 
@@ -33,7 +33,7 @@ class ProductSizeVariantSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         try:
-            return ProductSizeVariant.objects.get(name = validated_data['name'])
+            return ProductSizeVariant.objects.get(name__iexact = validated_data['name'])
         except ObjectDoesNotExist: 
             return super(ProductSizeVariantSerializer, self).create(validated_data)
 
@@ -46,7 +46,7 @@ class ProductColorVariantSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         try:
-            return ProductColorVariant.objects.get(name = validated_data['name'])
+            return ProductColorVariant.objects.get(name__iexact = validated_data['name'])
         except ObjectDoesNotExist: 
             return super(ProductColorVariantSerializer, self).create(validated_data)
 
@@ -55,11 +55,12 @@ class ProductColorVariantSerializer(serializers.ModelSerializer):
 class ProductGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductGallery
-        fields = ["image"]    
+        fields = ["id", "image"]    
         
     def create(self, validated_data):
         slug = self.context['slug']
-        return ProductGallery.objects.create(product__slug=slug, **validated_data)
+        product = Product.objects.get(slug=slug)
+        return ProductGallery.objects.create(product=product, **validated_data)
    
 
 # Product Serializer     
@@ -68,6 +69,7 @@ class ProductSerializer(WritableNestedModelSerializer):
     size = ProductSizeVariantSerializer(many=True)
     color = ProductColorVariantSerializer(many=True)
     images = ProductGallerySerializer(many=True, read_only=True)
+    slug = serializers.StringRelatedField(read_only=True)
     
     class Meta:
         model = Product

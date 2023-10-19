@@ -6,12 +6,11 @@ from .serializers import *
 
 # Cart Api
 class CartList(generics.ListAPIView):
-    queryset = Cart.objects.prefetch_related('items__product').all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
     
-    def get_serializer_context(self):
-        return {'user':self.request.user}
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user).prefetch_related('items__product').all()
 
 
 # Add To Cart

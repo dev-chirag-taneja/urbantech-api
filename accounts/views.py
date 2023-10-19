@@ -3,6 +3,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import logout
+from rest_framework import status
+from django.contrib.auth.forms import PasswordResetForm
 
 from .serializers import *
 
@@ -62,6 +64,37 @@ class ActivateUserView(generics.UpdateAPIView):
     def get_serializer_context(self):
         return {'pk' : self.kwargs['pk'], 'otp': self.kwargs['otp']}
 
+
+# Reset Password
+class PasswordResetView(generics.CreateAPIView):
+    # queryset = User.objects.all()
+    serializer_class = PasswordResetSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {"message": "No account with this email address."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Generate and send the password reset email
+            form = PasswordResetForm(data={"email": email})
+            if form.is_valid():
+                form.save(request=self.request)
+                return Response(
+                    {"message": "Password reset email sent."},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                raise serializer.ValidationError("An error occurred while sending the password reset email.")
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # List Profile Api
 class ListUserView(generics.ListAPIView):

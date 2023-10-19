@@ -41,9 +41,9 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
-admin.site.site_header = "UrbanTech administration"  
-admin.site.site_title = "Welcome to admin dashboard"
-admin.site.index_title = "UrbanTech administration"
+admin.site.site_header = "UrbanTech Administration"  
+admin.site.site_title = "Welcome To Admin Dashboard"
+admin.site.index_title = "UrbanTech Administration"
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from .models import *
+from order.serializers import AddressSerializer
 
 
 # Register Serializer
@@ -132,7 +133,23 @@ class ActivateUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+# Password Reset Serializer
+class PasswordResetSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    
+    class Meta:
+        model = User 
+        fields = ["email"]
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("No account with this email address.")
+        return value
         
+             
 # Profile List Serializer
 class ProfileListSerializer(serializers.ModelSerializer):
     class Meta:

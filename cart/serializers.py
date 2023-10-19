@@ -49,12 +49,13 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 # Cart Serializer
 class CartSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     items = CartItemSerializer(many=True, read_only=True)
     sub_total = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ["items", "sub_total"]
+        fields = [ "user", "items", "sub_total"]
         
     def get_sub_total(self, cart:Cart):
         return sum([(item.product.price * item.quantity) for item in cart.items.all()])

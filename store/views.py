@@ -26,7 +26,7 @@ class CategoryListView(generics.ListCreateAPIView):
 # Product List Api
 class ProductListView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    # permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     pagination_class = CustomPagePagination
     parser_classes = [parsers.MultiPartParser, parsers.JSONParser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -123,11 +123,11 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def destroy(self, request, *args, **kwargs):
         try:
-            review = self.get_queryset()
-            if request.user.is_admin:
+            review = Review.objects.get(id=self.kwargs['pk'])
+            if request.user.is_admin or review.user == request.user:
                 review.delete()
-            elif Review.objects.get(id=self.kwargs['pk'], user=request.user):
-                review.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except:
-            return Response(data={"message":"You dont have permission to perform this action!"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(data={"message": "You dont have permission to perform this action!"}, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response(data={"message": "Review not found!"}, status=status.HTTP_400_BAD_REQUEST)
