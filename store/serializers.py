@@ -89,20 +89,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         product = Product.objects.get(slug=slug)
         return Review.objects.create(user=user, product=product, **validated_data)
 
-
-# Review Serializer
-class ReviewDetailSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    class Meta:
-        model = Review
-        fields = ["id", "user", "name", "description", "created_at"]
-        
-    def validate(self, obj):
+    def update(self, instance, validated_data):
         user = self.context['user']
-        if user.is_admin:
-            return obj
-        try:
-            Review.objects.get(id=self.context['pk'], user=user)
-        except:
-            raise ValidationError({"message":"You dont have permission to perform this action!"})
-        return obj
+        if user.is_staff or instance.user == user:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            return instance
+        else:
+            raise serializers.ValidationError({"message": "You don't have permission to perform this action."})

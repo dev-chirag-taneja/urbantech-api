@@ -112,7 +112,7 @@ class ReviewListView(generics.ListCreateAPIView):
     
 # Product Review Detail Api
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ReviewDetailSerializer
+    serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):

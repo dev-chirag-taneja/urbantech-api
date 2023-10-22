@@ -73,7 +73,7 @@ class OrderItem(models.Model):
 class Address(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     order = models.OneToOneField(
-        Order, on_delete=models.SET_NULL, related_name="shipping_address", null=True
+        Order, on_delete=models.SET_NULL, related_name="shipping_address", null=True, blank=True
     )
     address = models.TextField()
     zip_code = models.CharField(max_length=50)

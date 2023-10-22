@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
+from django.forms import ValidationError
 
 from order.models import Address, Payment, Order, OrderItem
 from cart.models import Cart, CartItem
@@ -18,12 +20,6 @@ from cart.serializers import ProductCartItemSerializer, UserSerializer
 #         return instance.get_total()
 
 
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = ["address", "zip_code", "city", "state", "country"]
-
-
 # Checkout Serializer
 # class CheckoutSerializer(serializers.ModelSerializer):
 #     user_email = serializers.ReadOnlyField(source="user.email")
@@ -39,6 +35,34 @@ class AddressSerializer(serializers.ModelSerializer):
 #         return instance.get_sub_total()
 
 
+# Address Serializer
+class AddressSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Address
+        fields = ["id", "user", "address", "zip_code", "city", "state", "country"]
+        
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        cart = get_object_or_404(Cart, user=user)
+        
+        if not cart.items.exists():
+            raise serializers.ValidationError({"error": "Cart is empty"})
+
+        address = Address.objects.create(user=user, **validated_data)
+        return address
+    
+    def update(self, instance, validated_data):
+        if self.context['request'].user.is_staff or instance.user == self.context['request'].user:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            return instance
+        else:
+            raise serializers.ValidationError({"message": "You don't have permission to perform this action."})
+
+
 # Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,6 +71,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         read_only_fields = ("amount", "successful", "timestamp")
 
 
+# OrderItem Serializer
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductCartItemSerializer()
     size = serializers.StringRelatedField()

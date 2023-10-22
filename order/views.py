@@ -19,25 +19,37 @@ from .models import Order, OrderItem
 
 
 # Checkout Api
-class CheckoutList(generics.CreateAPIView):
+class CheckoutList(generics.ListCreateAPIView):
+    serializer_class = AddressSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Address.objects.filter(user = self.request.user)
+    
+    # def get(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     serializer = AddressSerializer(queryset, many=True)  # Serialize the QuerySet
+    #     return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        user = request.user
-        cart = get_object_or_404(Cart, user=user)
 
-        if not cart.items.exists():
-            return Response(
-                {"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        address_serializer = AddressSerializer(
-            data=request.data, context={"user": user}
-        )
-        address_serializer.is_valid(raise_exception=True)
-        address_serializer.save(user=user)
-        return Response(address_serializer.data, status=status.HTTP_201_CREATED)
-
+# Checkout Api
+class CheckoutDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated | IsAdminUser]
+    
+    def get_queryset(self):
+        return Address.objects.filter(id=self.kwargs["pk"], user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        try:
+            address = Address.objects.get(id=self.kwargs['pk'])
+            if request.user.is_staff or address.user == request.user:
+                address.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(data={"message": "You dont have permission to perform this action!"}, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response(data={"message": "Address not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
 # Payment Api
 class PaymentList(generics.CreateAPIView):
