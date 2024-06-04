@@ -3,23 +3,39 @@ import admin_thumbnails
 
 from .models import *
 
+
 # Register your models here.
 class CategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug':['name',]}
-    list_display = ['name', 'slug']
+    prepopulated_fields = {
+        "slug": [
+            "name",
+        ]
+    }
+    list_display = ["name", "slug"]
 
 
-@admin_thumbnails.thumbnail('image')
+@admin_thumbnails.thumbnail("image")
 class ProductGalleryInline(admin.TabularInline):
     model = ProductGallery
     extra = 3
 
 
 class ProductAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug':['name',]}
-    list_display = ['name', 'price', 'stock', 'category', 'featured_image', 'updated_at']
-    search_fields = ['name']
-    list_filter = ['category']
+    prepopulated_fields = {
+        "slug": [
+            "name",
+        ]
+    }
+    list_display = [
+        "name",
+        "price",
+        "stock",
+        "category",
+        "featured_image",
+        "updated_at",
+    ]
+    search_fields = ["name"]
+    list_filter = ["category"]
     list_per_page = 50
     inlines = [ProductGalleryInline]
 

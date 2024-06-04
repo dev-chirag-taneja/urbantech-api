@@ -48,9 +48,10 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_no:
-            uuid_str = str(uuid.uuid4().int)[
-                :20]
-            self.order_no = "-".join([uuid_str[i:i+5] for i in range(0, len(uuid_str), 5)])
+            uuid_str = str(uuid.uuid4().int)[:20]
+            self.order_no = "-".join(
+                [uuid_str[i : i + 5] for i in range(0, len(uuid_str), 5)]
+            )
         super(Order, self).save(*args, **kwargs)
 
 
@@ -71,9 +72,15 @@ class OrderItem(models.Model):
 
 
 class Address(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="addresses"
+    )
     order = models.OneToOneField(
-        Order, on_delete=models.SET_NULL, related_name="shipping_address", null=True, blank=True
+        Order,
+        on_delete=models.SET_NULL,
+        related_name="shipping_address",
+        null=True,
+        blank=True,
     )
     address = models.TextField()
     zip_code = models.CharField(max_length=50)

@@ -7,34 +7,6 @@ from cart.models import Cart, CartItem
 from cart.serializers import ProductCartItemSerializer, UserSerializer
 
 
-# class CheckoutItemSerializer(serializers.ModelSerializer):
-#     product_name = serializers.ReadOnlyField(source="product.name")
-#     product_price = serializers.ReadOnlyField(source="product.price")
-#     total_price = serializers.SerializerMethodField()
-
-#     class Meta:
-#         model = CartItem
-#         fields = ["product_name", "product_price", "quantity", "total_price"]
-
-#     def get_total_price(self, instance):
-#         return instance.get_total()
-
-
-# Checkout Serializer
-# class CheckoutSerializer(serializers.ModelSerializer):
-#     user_email = serializers.ReadOnlyField(source="user.email")
-#     sub_total = serializers.SerializerMethodField()
-#     items = CheckoutItemSerializer(many=True, read_only=True)
-#     shipping_address = AddressSerializer(source="user.address", read_only=True)
-
-#     class Meta:
-#         model = Cart
-#         fields = ["user_email", "sub_total", "items", "shipping_address"]
-
-#     def get_sub_total(self, instance):
-#         return instance.get_sub_total()
-
-
 # Address Serializer
 class AddressSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -42,32 +14,39 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = ["id", "user", "address", "zip_code", "city", "state", "country"]
-        
+
     def create(self, validated_data):
-        user = self.context.get('request').user
+        user = self.context.get("request").user
         cart = get_object_or_404(Cart, user=user)
-        
+
         if not cart.items.exists():
             raise serializers.ValidationError({"error": "Cart is empty"})
 
         address = Address.objects.create(user=user, **validated_data)
         return address
-    
+
     def update(self, instance, validated_data):
-        if self.context['request'].user.is_staff or instance.user == self.context['request'].user:
+        if (
+            self.context["request"].user.is_staff
+            or instance.user == self.context["request"].user
+        ):
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
             instance.save()
             return instance
         else:
-            raise serializers.ValidationError({"message": "You don't have permission to perform this action."})
+            raise serializers.ValidationError(
+                {"message": "You don't have permission to perform this action."}
+            )
 
 
 # Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
+    address = serializers.UUIDField(required=True)
+
     class Meta:
         model = Payment
-        fields = ("payment_option", "amount", "successful", "timestamp")
+        fields = ("payment_option", "address", "amount", "successful", "timestamp")
         read_only_fields = ("amount", "successful", "timestamp")
 
 

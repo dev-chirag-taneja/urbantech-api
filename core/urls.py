@@ -34,10 +34,10 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('debug/', include('debug_toolbar.urls')),
-    path('api/', include('accounts.urls')),
-    path('api/', include('store.urls')),
-    path('api/', include('cart.urls')),
-    path('api/', include('order.urls')),
+    path('api/auth/', include('accounts.urls')),
+    path('api/store/', include('store.urls')),
+    path('api/cart/', include('cart.urls')),
+    path('api/order/', include('order.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
